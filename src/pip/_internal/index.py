@@ -982,7 +982,10 @@ class Link(object):
 
     @property
     def path(self):
-        return urllib_parse.unquote(urllib_parse.urlsplit(self.url)[2])
+        path = urllib_parse.unquote(urllib_parse.urlsplit(self.url)[2])
+        if path == '.':
+            return os.getcwd()
+        return path
 
     def splitext(self):
         return splitext(posixpath.basename(self.path.rstrip('/')))
@@ -994,6 +997,8 @@ class Link(object):
     @property
     def url_without_fragment(self):
         scheme, netloc, path, query, fragment = urllib_parse.urlsplit(self.url)
+        if path == '.':
+            path = os.getcwd()
         return urllib_parse.urlunsplit((scheme, netloc, path, query, None))
 
     _egg_fragment_re = re.compile(r'[#&]egg=([^&]*)')
